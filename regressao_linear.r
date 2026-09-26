@@ -12,6 +12,33 @@ for (v in names(dataset)) {
 }
 
 dataset_numerico <- dataset[, sapply(dataset, is.numeric)]
+#cat("Colunas numéricas:", ncol(dataset_numerico), "\n")   # original ficava com bem menos
+
+
+# ANÁLISE DESCRITIVA DO ADG (gráficos na aba Plots do RStudio)
+
+adg <- dataset_numerico$ADG
+
+# Gráfico 1: distribuição do ADG
+hist(adg, breaks = 25, freq = FALSE, col = "#cde2fb", border = "white",
+     main = "Distribuição do ADG", xlab = "ADG (kg/dia)", ylab = "Densidade")
+lines(density(adg), col = "#2a78d6", lwd = 2)
+abline(v = mean(adg), col = "#eb6834", lwd = 2)
+abline(v = median(adg), col = "grey30", lwd = 2, lty = 2)
+legend("topleft", c(paste("média =", round(mean(adg), 3)),
+                    paste("mediana =", round(median(adg), 3))),
+       col = c("#eb6834", "grey30"), lty = c(1, 2), lwd = 2, bty = "n")
+
+# Gráfico 2: ADG por período
+boxplot(ADG ~ PERIOD, data = dataset_numerico, col = "#cde2fb", border = "#2a78d6",
+        main = "ADG por período de pesagem", xlab = "Período", ylab = "ADG (kg/dia)")
+medias_periodo <- tapply(dataset_numerico$ADG, dataset_numerico$PERIOD, mean)
+lines(seq_along(medias_periodo), medias_periodo, col = "#eb6834", lwd = 2, type = "b", pch = 19)
+abline(h = 0, lty = 3, col = "grey40")
+legend("topright", "média do período", col = "#eb6834", lwd = 2, pch = 19, bty = "n")
+
+# OBSERVAÇÃO (não dá erro neste dataset): se houver NA, cor() devolve NA.
+# O mais seguro seria cor(dataset_numerico, use = "pairwise.complete.obs").
 matriz_correlacao <- cor(dataset_numerico)
 png("matriz_correlacao.png", width = 1200, height = 1200, res = 150)
 corrplot(matriz_correlacao, method = "color", type = "upper", tl.cex = 0.5, cl.cex = 0.5)
